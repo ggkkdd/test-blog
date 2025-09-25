@@ -1,24 +1,27 @@
-import { BlogPostsPreview } from "@/components/BlogPostPreview";
-import { BlogPostsPagination } from "@/components/BlogPostsPagination";
-import { Footer } from "@/components/Footer";
-import { Header } from "@/components/Header";
-import { wisp } from "@/lib/wisp";
+import { prismaClient } from "@/lib/prisma";
+import { ListingCard } from "@/components/ListingCard";
 
-const Page = async ({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined };
-}) => {
-  const page = searchParams.page ? parseInt(searchParams.page as string) : 1;
-  const result = await wisp.getPosts({ limit: 6, page });
+export default async function Page() {
+  const listings = await prismaClient.listing.findMany({
+    include: { images: { orderBy: { sortOrder: "asc" }, take: 1 } },
+    orderBy: { createdAt: "desc" },
+  });
+
   return (
     <div className="container mx-auto px-5 mb-10">
-      <Header />
-      <BlogPostsPreview posts={result.posts} />
-      <BlogPostsPagination pagination={result.pagination} />
-      <Footer />
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-6">
+        {listings.map((l) => (
+          <ListingCard
+            key={l.id}
+            id={l.id}
+            title={l.title}
+            city={l.city}
+            country={l.country}
+            price={l.price}
+            imageUrl={l.images[0]?.url}
+          />
+        ))}
+      </div>
     </div>
   );
-};
-
-export default Page;
+}
