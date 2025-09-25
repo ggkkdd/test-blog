@@ -1,22 +1,30 @@
-import { BlogPostsPreview } from "@/components/BlogPostPreview";
-import { BlogPostsPagination } from "@/components/BlogPostsPagination";
-import { Footer } from "@/components/Footer";
-import { Header } from "@/components/Header";
-import { wisp } from "@/lib/wisp";
+import { ListingCard } from "@/components/ListingCard";
+import { prisma } from "@/lib/prisma";
 
 const Page = async ({
   searchParams,
 }: {
   searchParams: { [key: string]: string | string[] | undefined };
 }) => {
-  const page = searchParams.page ? parseInt(searchParams.page as string) : 1;
-  const result = await wisp.getPosts({ limit: 6, page });
+  const city = (searchParams.city as string) || undefined;
+  const country = (searchParams.country as string) || undefined;
+  const listings = await prisma.listing.findMany({
+    where: {
+      city: city,
+      country: country,
+    },
+    orderBy: { createdAt: "desc" },
+  });
   return (
     <div className="container mx-auto px-5 mb-10">
-      <Header />
-      <BlogPostsPreview posts={result.posts} />
-      <BlogPostsPagination pagination={result.pagination} />
-      <Footer />
+      <div className="flex items-center justify-between py-6">
+        <h1 className="text-2xl font-semibold">Find your next stay</h1>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        {listings.map((l) => (
+          <ListingCard key={l.id} listing={l} />
+        ))}
+      </div>
     </div>
   );
 };

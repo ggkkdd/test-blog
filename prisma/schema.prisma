@@ -1,0 +1,42 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Listing {
+  id              String        @id @default(cuid())
+  title           String
+  description     String
+  imageUrl        String
+  pricePerNight   Int
+  numBedrooms     Int           @default(1)
+  numBeds         Int           @default(1)
+  numBathrooms    Int           @default(1)
+  maxGuests       Int           @default(2)
+  city            String
+  country         String
+  amenities       Json?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  reservations    Reservation[]
+}
+
+model Reservation {
+  id          String   @id @default(cuid())
+  listingId   String
+  listing     Listing  @relation(fields: [listingId], references: [id])
+  guestName   String
+  guestEmail  String
+  startDate   DateTime
+  endDate     DateTime
+  totalPrice  Int
+  createdAt   DateTime @default(now())
+}

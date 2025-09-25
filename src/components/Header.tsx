@@ -72,15 +72,15 @@ export const Navigation: FunctionComponent = () => {
   );
 };
 
-export const Header: FunctionComponent = () => {
+export function Header() {
   return (
-    <section className="flex items-center justify-between mt-8 md:mt-16 mb-12">
-      <Link href="/">
-        <h1 className="text-4xl md:text-6xl font-bold tracking-tighter leading-tight">
-          {config.blog.name}
-        </h1>
-      </Link>
-      <Navigation />
-    </section>
+    <header className="w-full py-4 border-b bg-background/60 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container mx-auto px-5 flex items-center justify-between">
+        <a href="/" className="text-xl font-semibold">Staybnb</a>
+        <nav className="flex items-center gap-4 text-sm text-muted-foreground">
+          <a href="/" className="hover:text-foreground">Home</a>
+        </nav>
+      </div>
+    </header>
   );
-};
+}
